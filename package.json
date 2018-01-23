@@ -1,5 +1,5 @@
 {
-  "name": "@jidibingren/simple-fileserver",
+  "name": "simple-fileserver",
   "version": "0.0.1",
   "description": "a simple file server",
   "main": "server.js",
