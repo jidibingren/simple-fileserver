@@ -29,7 +29,7 @@ before(program, 'outputHelp', function() {
 program
   .version(version)
   .usage('[option] [dir]')
-  .option('-p, --port <port-number>', 'set port for server (defaults is 1234)')
+  .option('-p, --port <port-number>', 'set port for server (defaults is 8080)')
   .option('-i, --ip <ip-address>', 'set ip address for server (defaults is automatic getting by program)')
   .parse(process.argv);
 
