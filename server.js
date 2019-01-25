@@ -1,12 +1,48 @@
 #!/usr/bin/env node
 
-var express = require("express"),
+var program = require('commander'),
+    underscore = require('underscore'),
+    qrcode = require('qrcode-terminal'),
+    express = require("express"),
     app = express(),
     bodyParser = require('body-parser'),
     errorHandler = require('errorhandler'),
     methodOverride = require('method-override'),
-    hostname = process.env.HOSTNAME || '0.0.0.0',
-    port = parseInt(process.env.PORT, 10) || 8080,
+    pkg = require('./package.json');
+
+var version = pkg.version;
+
+function before(obj, method, fn) {
+  var old = obj[method];
+
+  obj[method] = function() {
+    fn.call(this);
+    old.apply(this, arguments);
+  };
+}
+
+
+before(program, 'outputHelp', function() {
+  this.allowUnknownOption();
+});
+
+program
+  .version(version)
+  .usage('[option] [dir]')
+  .option('-p, --port <port-number>', 'set port for server (defaults is 1234)')
+  .option('-i, --ip <ip-address>', 'set ip address for server (defaults is automatic getting by program)')
+  .parse(process.argv);
+
+var hostname = program.ip || underscore
+  .chain(require('os').networkInterfaces())
+  .values()
+  .flatten()
+  .find(function(iface) {
+    return iface.family === 'IPv4' && iface.internal === false;
+  })
+  .value()
+  .address;
+    port = parseInt(program.port, 10) || 8080,
     publicDir = process.argv[2] || __dirname + '/public',
     path = require('path'),
     fs = require("fs"),
@@ -84,5 +120,7 @@ app.use(errorHandler({
   showStack: true
 }));
 
-console.log("Simple file server showing %s listening at http://%s:%s", publicDir, hostname, port);
+var serverUrl = "http://"+hostname+":"+port
+qrcode.generate(serverUrl+'/index.html');
+console.log("Simple file server showing %s listening at %s", publicDir, serverUrl);
 app.listen(port, hostname);
