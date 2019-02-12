@@ -1,6 +1,9 @@
 #!/usr/bin/env node
 
 var program = require('commander'),
+    path = require('path'),
+    fs = require("fs"),
+    formidable = require("formidable")
     underscore = require('underscore'),
     qrcode = require('qrcode-terminal'),
     express = require("express"),
@@ -33,6 +36,11 @@ program
   .option('-i, --ip <ip-address>', 'set ip address for server (defaults is automatic getting by program)')
   .parse(process.argv);
 
+if (program.args.length == 0) {
+  console.log('Please, specify a folder to serve')
+  process.exit();
+}
+
 var hostname = program.ip || underscore
   .chain(require('os').networkInterfaces())
   .values()
@@ -41,14 +49,11 @@ var hostname = program.ip || underscore
     return iface.family === 'IPv4' && iface.internal === false;
   })
   .value()
-  .address;
+  .address,
     port = parseInt(program.port, 10) || 8080,
-    publicDir = process.argv[2] || __dirname + '/public',
-    path = require('path'),
-    fs = require("fs"),
-    formidable=require("formidable"); 
-
-
+    publicDir = program.args[0] || __dirname + '/public'; 
+console.log(program)
+console.log(publicDir)
 app.get("/", function (req, res) {
     res.writeHead(200, {'Content-Type': 'text/html;charset=utf-8'});
     res.end("<!DOCTYPE html>"
