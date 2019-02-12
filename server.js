@@ -52,8 +52,7 @@ var hostname = program.ip || underscore
   .address,
     port = parseInt(program.port, 10) || 8080,
     publicDir = program.args[0] || __dirname + '/public'; 
-console.log(program)
-console.log(publicDir)
+    
 app.get("/", function (req, res) {
     res.writeHead(200, {'Content-Type': 'text/html;charset=utf-8'});
     res.end("<!DOCTYPE html>"
