@@ -79,23 +79,44 @@ app.post('/upload', function (req, res) {
 });  
 
 function handle(req, res, platform){
-    var form=new formidable.IncomingForm();
+    var formDataName = ''
+    var form = new formidable.IncomingForm();
     form.encoding = "utf-8";
     form.uploadDir=publicDir;
     form.keepExtensions = true;
     // form.maxFieldsSize = 200 * 1024 * 1024;
+    // console.log(form)
+    form.on('field', function(name, value) {
+      
+    })
+
+    form.on('file', function(name, file) {
+      
+    })
+
+    form.on('end', function() {
+      
+    })
+
+    form.on('error', function(err) {
+      console.log('error:' + JSON.stringify(err))
+    })
+
     form.on('fileBegin', function(name, file) {
-      var destPath=publicDir+platform;
-      file.path=destPath+file.name;
+      console.log('fileBegin' + JSON.stringify(file));
+      formDataName = name
+      var destPath = publicDir + platform;
+      file.path = destPath + file.name;
       mkdirsSync(destPath);
-      console.log('fileBeg'+JSON.stringify(file)); 
+       
     });
     
     form.parse(req,function (err,fields,files) {
-        if(files.file){
-            var path='http://'+hostname+':'+port+'/'+platform+files.file.name;
+        if(files[formDataName]){
+            var path = 'http://' + hostname + ':' + port + '/' + platform + files[formDataName].name;
             console.log(path);
-            res.write(JSON.stringify({err:0,path:path}));
+            res.writeHead(200, {'Content-Type': 'application/json'});
+            res.write(JSON.stringify({code:0,message:'',data:{path:path}}));
             // res.send('文件上传成功'); 
             res.end();
         }
