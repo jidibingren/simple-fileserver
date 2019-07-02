@@ -32,14 +32,15 @@ before(program, 'outputHelp', function() {
 program
   .version(version)
   .usage('[option] [dir]')
-  .option('-p, --port <port-number>', 'set port for server (defaults is 8080)')
+  .option('-p, --port <port-number>', 'set port for server (defaults is 8080)', '8080')
   .option('-i, --ip <ip-address>', 'set ip address for server (defaults is automatic getting by program)')
+  .option('-s, --suffix <suffix-address>', 'set port for server (defaults is index.html)', 'index.html')
   .parse(process.argv);
 
-if (program.args.length == 0) {
-  console.log('Please, specify a folder to serve')
-  process.exit();
-}
+// if (program.args.length == 0) {
+//   console.log('Please, specify a folder to serve')
+//   process.exit();
+// }
 
 var hostname = program.ip || underscore
   .chain(require('os').networkInterfaces())
@@ -51,8 +52,8 @@ var hostname = program.ip || underscore
   .value()
   .address,
     port = parseInt(program.port, 10) || 8080,
-    publicDir = program.args[0] || __dirname + '/public'; 
-    
+    publicDir = program.args[0] || __dirname;
+
 app.get("/", function (req, res) {
     res.writeHead(200, {'Content-Type': 'text/html;charset=utf-8'});
     res.end("<!DOCTYPE html>"
@@ -145,7 +146,8 @@ app.use(errorHandler({
   showStack: true
 }));
 
-var serverUrl = "http://"+hostname+":"+port
-qrcode.generate(serverUrl+'/index.html');
+var serverUrl = "http://"+hostname+":"+port+'/'+program.suffix
+qrcode.generate(serverUrl+'/'+program.suffix, { small: false })
+
 console.log("Simple file server showing %s listening at %s", publicDir, serverUrl);
 app.listen(port, hostname);
