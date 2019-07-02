@@ -5,7 +5,7 @@ var program = require('commander'),
     fs = require("fs"),
     formidable = require("formidable")
     underscore = require('underscore'),
-    qrcode = require('qrcode-terminal'),
+    qrcode = require('./qrcode'),
     express = require("express"),
     app = express(),
     bodyParser = require('body-parser'),
@@ -147,7 +147,20 @@ app.use(errorHandler({
 }));
 
 var serverUrl = "http://"+hostname+":"+port+'/'+program.suffix
-qrcode.generate(serverUrl+'/'+program.suffix, { small: false })
+// qrcode.generate(serverUrl+'/'+program.suffix, { small: false })
+
+qrcode.render(serverUrl, 
+  {
+    color:{
+      // dark:'\x1b[40m  \x1b[0m',
+      dark:'\x1b[33;40m  \x1b[0m',
+      light:'\x1b[32;40m💀 \x1b[0m'
+    }
+  },
+  function (error, url) {
+    console.log(url)
+  }
+)
 
 console.log("Simple file server showing %s listening at %s", publicDir, serverUrl);
 app.listen(port, hostname);
